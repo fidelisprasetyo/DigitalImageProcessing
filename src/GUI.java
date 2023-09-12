@@ -5,10 +5,14 @@ import java.awt.event.ActionListener;
 
 public class GUI extends JFrame implements ActionListener {
 
-    private JLabel inputImage;
-    private JLabel outputImage;
+    private JLabel inputImageIcon;
+    private JLabel outputImageIcon;
     private JButton browseButton = new JButton("Browse");
     private JButton applyButton = new JButton("Apply");
+    private JButton saveButton = new JButton("Save Output");
+    static JToolBar toolBar;
+    static JComboBox comboBox;
+    private ImageHandler imageHandler;
 
     public GUI() {
 
@@ -18,37 +22,40 @@ public class GUI extends JFrame implements ActionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
+        // prepare toolbar and combobox
+        toolBar = new JToolBar();
+        comboBox = new JComboBox(new String[] {"Convert to PGM", "Scale spatial resolution", "Change level resolution"});
+
         // prepare image panels
-        JLabel inputStaticText = new JLabel("Input Image");
-        JLabel outputStaticText = new JLabel("Output Image");
-        inputStaticText.setHorizontalAlignment(JLabel.CENTER);
-        outputStaticText.setHorizontalAlignment(JLabel.CENTER);
         JPanel inputPanel = new JPanel();
         JPanel outputPanel = new JPanel();
-        inputImage = new JLabel();
-        outputImage = new JLabel();
-        inputPanel.add(inputImage);
-        outputPanel.add(outputImage);
+        inputImageIcon = new JLabel();
+        outputImageIcon = new JLabel();
+        inputPanel.add(inputImageIcon);
+        outputPanel.add(outputImageIcon);
 
         // put input and output panels into a container
-        JPanel imagePanelContainer = new JPanel(new GridLayout(2,2));
-        imagePanelContainer.add(inputStaticText);
-        imagePanelContainer.add(outputStaticText);
+        JPanel imagePanelContainer = new JPanel(new GridLayout(1,2));
         imagePanelContainer.add(inputPanel);
         imagePanelContainer.add(outputPanel);
 
-        // button container (TEMP)
-        JPanel buttonContainer = new JPanel(new GridLayout(1,2));
-        buttonContainer.add(browseButton);
-        buttonContainer.add(applyButton);
+        // place buttons and combobox into toolbar
+        toolBar.add(browseButton);
+        toolBar.add(applyButton);
+        toolBar.add(saveButton);
+        toolBar.add(comboBox);
 
         // place button and container on the frame
         frame.add(imagePanelContainer, BorderLayout.CENTER);
-        frame.add(buttonContainer, BorderLayout.SOUTH);
+        frame.add(toolBar, BorderLayout.NORTH);
+
+        // initiate imageHandler
+        imageHandler = new ImageHandler(inputImageIcon, outputImageIcon);
 
         // button actionListeners
+        comboBox.addActionListener(new ComboBoxActionListener());
         browseButton.addActionListener(new BrowseBtnActionListener());
-        applyButton.addActionListener(new ApplyBtnActionListener());
+        saveButton.addActionListener(new SaveBtnActionListener());
         frame.setVisible(true);
     }
 
@@ -61,19 +68,42 @@ public class GUI extends JFrame implements ActionListener {
         // not used
     }
 
+    private class ComboBoxActionListener implements  ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedOption = (int) comboBox.getSelectedIndex();
+            if (selectedOption == 0) {
+                // TODO: convert to PGM option
+                applyButton.addActionListener(new ConvertToPGMActionListener());
+            } else if (selectedOption == 1) {
+                // TODO: Scale spatial resolution option
+            } else if (selectedOption == 2) {
+                // TODO: Change level resolution option
+            } else {
+
+            }
+        }
+    }
+
     private class BrowseBtnActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            ImageHandler imageHandler = new ImageHandler(inputImage, outputImage);
             imageHandler.openImage();
         }
     }
 
-    private class ApplyBtnActionListener implements ActionListener {
+    private class ConvertToPGMActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            ImageHandler imageHandler = new ImageHandler(inputImage, outputImage);
-            //ImageHandler.convertToPGM(); //TODO
+            imageHandler.convertToPGM();
+        }
+    }
+
+    private class SaveBtnActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ImageHandler imageHandler = new ImageHandler(inputImageIcon, outputImageIcon);
+            // TODO
         }
     }
 }
