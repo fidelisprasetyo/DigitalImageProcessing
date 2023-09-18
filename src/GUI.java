@@ -296,7 +296,7 @@ public class GUI extends JFrame implements ActionListener {
     private class SaveBtnActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO
+            imageHandler.saveOutputImage();
         }
     }
 }

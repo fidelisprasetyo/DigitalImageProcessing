@@ -79,6 +79,33 @@ class ImageHandler {
         return grayDepth;
     }
 
+    public void saveOutputImage() {
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "png", "jpg", "gif");
+
+        fileChooser.setDialogTitle("Save Output Image File");
+        fileChooser.setFileFilter(filter);
+
+        int userSelection = fileChooser.showSaveDialog(null);
+        if(userSelection == JFileChooser.APPROVE_OPTION) {
+            File outputFile = fileChooser.getSelectedFile();
+            String filePath = outputFile.getPath();
+
+            if(!filePath.endsWith(".png")) {
+                filePath += ".png";
+                outputFile = new File(filePath);
+            }
+
+            try {
+                ImageIO.write(outputImage, "png", outputFile);
+                JOptionPane.showMessageDialog(null, "Image saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error! Exception code: " + e, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     public void convertToPGM() {
         try {
             int grayDepth = getGrayDepth(inputImage);
