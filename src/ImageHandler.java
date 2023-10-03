@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,12 +25,12 @@ class ImageHandler {
         this.rightImage = rightImage;
     }
 
-    public boolean isInputNull() {
-        return (inputImage == null);
-    }
-
-    public BufferedImage getInputImage() {
-        return inputImage;
+    private void updateDisplayedImage(BufferedImage image, int leftOrRight) {
+        if (leftOrRight == RIGHT_IMAGE) {
+            rightImage.setIcon(new ImageIcon(image));
+        } else {
+            leftImage.setIcon(new ImageIcon(image)); // default
+        }
     }
 
     public void openImage() {
@@ -63,22 +62,6 @@ class ImageHandler {
         updateDisplayedImage(inputImage, RIGHT_IMAGE);
     }
 
-    private void updateDisplayedImage(BufferedImage image, int leftOrRight) {
-        if (leftOrRight == LEFT_IMAGE) {
-            leftImage.setIcon(new ImageIcon(image));
-        } else if (leftOrRight == RIGHT_IMAGE) {
-            rightImage.setIcon(new ImageIcon(image));
-        } else {
-            leftImage.setIcon(new ImageIcon(image)); // default
-        }
-    }
-
-    public int getGrayDepth(BufferedImage img) {
-        Raster raster = img.getData();
-        int grayDepth = raster.getSampleModel().getSampleSize(0);
-        return grayDepth;
-    }
-
     public void saveOutputImage() {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "png", "jpg", "gif");
@@ -104,6 +87,20 @@ class ImageHandler {
                 JOptionPane.showMessageDialog(null, "Error! Exception code: " + e, "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    public boolean isInputNull() {
+        return (inputImage == null);
+    }
+
+    public BufferedImage getInputImage() {
+        return inputImage;
+    }
+
+    public int getGrayDepth(BufferedImage img) {
+        Raster raster = img.getData();
+        int grayDepth = raster.getSampleModel().getSampleSize(0);
+        return grayDepth;
     }
 
     public void convertToPGM() {
