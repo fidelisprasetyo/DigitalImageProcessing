@@ -3,15 +3,7 @@ import java.awt.image.Raster;
 
 public class GrayLevelChanger {
 
-    private BufferedImage inputImage;
-    private int newDepth;
-
-    public GrayLevelChanger(BufferedImage inputImage, int newDepth) {
-        this.inputImage = inputImage;
-        this.newDepth = newDepth;
-    }
-
-    public BufferedImage run() {
+    public BufferedImage changeGrayLevel(BufferedImage inputImage, int newDepth) {
         int inputDepth = getGrayDepth(inputImage);
         int inputLevel = (int) Math.pow(2, inputDepth);
         int targetLevel = (int) Math.pow(2, newDepth);

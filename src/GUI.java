@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
 
 public class GUI extends JFrame implements ActionListener {
 
@@ -74,6 +74,7 @@ public class GUI extends JFrame implements ActionListener {
         // not used
     }
 
+    // undo all button which reverts right image to its original file
     private class UndoBtnActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -81,6 +82,7 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    // main combo box that provides all image processing options
     private class ComboBoxActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -92,16 +94,14 @@ public class GUI extends JFrame implements ActionListener {
             if(imageHandler.isInputNull()) {
                 executeButton.addActionListener(e1 -> JOptionPane.showMessageDialog(null, "No input file!", "Error", JOptionPane.ERROR_MESSAGE));
             } else {
-                if (selectedOption == 0) {
-                    // do nothing
+                if (selectedOption == 0) {  // nothing
+
                 } else if (selectedOption == 1) {
-                    // convert to PGM
-                    executeButton.addActionListener(new ConvertToPGMActionListener());
+                    executeButton.addActionListener(new ConvertToPGMActionListener());  // convert to PGM
                 } else if (selectedOption == 2) {
-                    // Scale spatial resolution option
-                    executeButton.addActionListener(new SpatialResolutionActionListener());
+                    executeButton.addActionListener(new SpatialResolutionActionListener()); // change spatial resolution
                 } else if (selectedOption == 3) {
-                    executeButton.addActionListener(new GrayResolutionActionListener());
+                    executeButton.addActionListener(new GrayResolutionActionListener());    // change gray level resolution
                 } else if (selectedOption == 4) {
                     executeButton.addActionListener(new HistogramEqualizationActionListener());
                 }
@@ -109,6 +109,7 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    // browse button to open the input file
     private class BrowseBtnActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -116,19 +117,23 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    // convert to pgm
     private class ConvertToPGMActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            imageHandler.convertToPGM();
+            ImageOperator imageOperator = new ImageOperator();
+            imageOperator.convertToPGM(imageHandler.getCurrentImage());
         }
     }
 
+    // change spatial resolution
     private class SpatialResolutionActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            int inputWidth = imageHandler.getInputImage().getWidth();
-            int inputHeight = imageHandler.getInputImage().getHeight();
+            int inputWidth = imageHandler.getCurrentImage().getWidth();
+            int inputHeight = imageHandler.getCurrentImage().getHeight();
 
+            // pop up dialog gui
             JDialog popUpDialog = new JDialog(frame, "Change spatial resolution", true);
             popUpDialog.setLayout(new GridLayout(4, 1));
 
@@ -162,6 +167,7 @@ public class GUI extends JFrame implements ActionListener {
 
             cancelButton.addActionListener(e17 -> popUpDialog.dispose());
 
+            // text field to get new width from user, automatically scales the height value by pressing enter
             widthTextField.addActionListener(e16 -> {
                 String widthInput = widthTextField.getText();
                 try {
@@ -177,21 +183,7 @@ public class GUI extends JFrame implements ActionListener {
                 }
             });
 
-            widthTextField.addActionListener(e16 -> {
-                String widthInput = widthTextField.getText();
-                try {
-                    int curWidth = inputWidth;
-                    int newWidth = Integer.parseInt(widthInput);
-
-                    int newHeight = inputHeight * newWidth / curWidth;
-                    heightTextField.setText(Integer.toString(newHeight));
-
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Please enter an integer!", "Error", JOptionPane.ERROR_MESSAGE);
-                    widthTextField.setText(Integer.toString(inputWidth));
-                }
-            });
-
+            // text field to get new height from user, automatically scales the width value by pressing enter
             heightTextField.addActionListener(e15 -> {
                 String heightInput = heightTextField.getText();
                 try {
@@ -207,6 +199,7 @@ public class GUI extends JFrame implements ActionListener {
                 }
             });
 
+            // combo box that lists scaling methods (linear/ interpolation)
             comboBox.addActionListener(e14 -> {
                 int srOption = comboBox.getSelectedIndex();
 
@@ -220,38 +213,52 @@ public class GUI extends JFrame implements ActionListener {
                 }
                 else if (srOption == 1) {        // Nearest Neighbor
                     okButton.addActionListener(e13 -> {
+                        ImageOperator imageOperator = new ImageOperator();
+                        BufferedImage outputImage;
                         int newWidth = Integer.parseInt(widthTextField.getText());
                         int newHeight = Integer.parseInt(heightTextField.getText());
-                        imageHandler.nearestNeighbor(newWidth, newHeight);
+
+                        outputImage = imageOperator.nearestNeighbor(imageHandler.getCurrentImage(), newWidth, newHeight);
+                        imageHandler.updateBufferedImage(outputImage);
                         popUpDialog.dispose();
                     });
                 } else if (srOption == 2) {     // Linear Interpolation
                     okButton.addActionListener(e12 -> {
+                        ImageOperator imageOperator = new ImageOperator();
+                        BufferedImage outputImage;
                         int newWidth = Integer.parseInt(widthTextField.getText());
                         int newHeight = Integer.parseInt(heightTextField.getText());
-                        imageHandler.imageInterpolation(newWidth, newHeight, ImageHandler.LINEAR);
+
+                        outputImage = imageOperator.linearInterpolation(imageHandler.getCurrentImage(), newWidth, newHeight);
+                        imageHandler.updateBufferedImage(outputImage);
                         popUpDialog.dispose();
                     });
                 } else {            // Bilinear Interpolation
                     okButton.addActionListener(e1 -> {
+                        ImageOperator imageOperator = new ImageOperator();
+                        BufferedImage outputImage;
                         int newWidth = Integer.parseInt(widthTextField.getText());
                         int newHeight = Integer.parseInt(heightTextField.getText());
-                        imageHandler.imageInterpolation(newWidth, newHeight, ImageHandler.BILINEAR);
+
+                        outputImage = imageOperator.bilinearInterpolation(imageHandler.getCurrentImage(), newWidth, newHeight);
+                        imageHandler.updateBufferedImage(outputImage);
                         popUpDialog.dispose();
                     });
                 }
             });
-
             popUpDialog.setSize(300,200);
             popUpDialog.setLocationRelativeTo(frame);
             popUpDialog.setVisible(true);
         }
     }
 
+    // change gray level resolution
     private class GrayResolutionActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            int inputGrayDepth = imageHandler.getGrayDepth(imageHandler.getInputImage());
+            int inputGrayDepth = imageHandler.getGrayDepth(imageHandler.getCurrentImage());
+
+            // pop up dialog gui to get user's desired value
             JDialog popUpDialog = new JDialog(frame, "Change gray level resolution ", true);
             popUpDialog.setLayout(new GridLayout(3, 1));
 
@@ -278,7 +285,12 @@ public class GUI extends JFrame implements ActionListener {
             okButton.addActionListener(e1 -> {
                 String input = grayTextField.getText();
                 int newDepth = Integer.parseInt(input);
-                imageHandler.changeGrayLevel(newDepth);
+
+                BufferedImage outputImage;
+                ImageOperator imageOperator = new ImageOperator();
+                outputImage = imageOperator.changeGrayLevel(imageHandler.getCurrentImage(), newDepth);
+
+                imageHandler.updateBufferedImage(outputImage);
                 popUpDialog.dispose();
             });
 

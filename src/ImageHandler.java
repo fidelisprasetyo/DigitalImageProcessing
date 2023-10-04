@@ -10,17 +10,19 @@ class ImageHandler {
 
     public static final int LEFT_IMAGE = 0;
     public static final int RIGHT_IMAGE = 1;
-    public static final int LINEAR = 0;
-    public static final int BILINEAR = 1;
     private BufferedImage originalImage;
-    private BufferedImage inputImage;
-    private BufferedImage outputImage;
+    private BufferedImage currentImage;
     private JLabel leftImage;
     private JLabel rightImage;
 
     public ImageHandler(JLabel leftImage, JLabel rightImage) {
         this.leftImage = leftImage;
         this.rightImage = rightImage;
+    }
+
+    public void updateBufferedImage(BufferedImage outputImage) {
+        updateDisplayedImage(outputImage, RIGHT_IMAGE);
+        currentImage = outputImage;
     }
 
     private void updateDisplayedImage(BufferedImage image, int leftOrRight) {
@@ -44,7 +46,7 @@ class ImageHandler {
                 originalImage = ImageIO.read(selectedFile);
                 if (originalImage != null) {
                     updateDisplayedImage(originalImage, LEFT_IMAGE);
-                    inputImage = originalImage;
+                    currentImage = originalImage;
                 } else {
                     JOptionPane.showMessageDialog(null, "Failed to open file", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -56,8 +58,8 @@ class ImageHandler {
     }
 
     public void revertToOriginal() {
-        inputImage = originalImage;
-        updateDisplayedImage(inputImage, RIGHT_IMAGE);
+        currentImage = originalImage;
+        updateDisplayedImage(currentImage, RIGHT_IMAGE);
     }
 
     public void saveOutputImage() {
@@ -76,9 +78,8 @@ class ImageHandler {
                 filePath += ".png";
                 outputFile = new File(filePath);
             }
-
             try {
-                ImageIO.write(outputImage, "png", outputFile);
+                ImageIO.write(currentImage, "png", outputFile);
                 JOptionPane.showMessageDialog(null, "Image saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -88,11 +89,11 @@ class ImageHandler {
     }
 
     public boolean isInputNull() {
-        return (inputImage == null);
+        return (currentImage == null);
     }
 
-    public BufferedImage getInputImage() {
-        return inputImage;
+    public BufferedImage getCurrentImage() {
+        return currentImage;
     }
 
     public int getGrayDepth(BufferedImage img) {
@@ -101,32 +102,4 @@ class ImageHandler {
         return grayDepth;
     }
 
-    public void convertToPGM() {
-        PGMConverter pgmConverter = new PGMConverter();
-        pgmConverter.convertToPGM(inputImage);
-    }
-
-    public void nearestNeighbor(int newWidth, int newHeight) {
-        SpatialResolutionChanger spatialResolutionChanger = new SpatialResolutionChanger(inputImage, newWidth, newHeight);
-        outputImage = spatialResolutionChanger.nearestNeighbor();
-
-        updateDisplayedImage(outputImage, RIGHT_IMAGE);
-        inputImage = outputImage; // update the input
-    }
-
-    public void imageInterpolation(int newWidth, int newHeight, int method) {
-        SpatialResolutionChanger spatialResolutionChanger = new SpatialResolutionChanger(inputImage, newWidth, newHeight);
-        outputImage = spatialResolutionChanger.imageInterpolation(method);
-
-        updateDisplayedImage(outputImage, RIGHT_IMAGE);
-        inputImage = outputImage; // update the input
-    }
-
-    public void changeGrayLevel(int newDepth) {
-        GrayLevelChanger grayLevelChanger = new GrayLevelChanger(inputImage, newDepth);
-        outputImage = grayLevelChanger.run();
-
-        updateDisplayedImage(outputImage, RIGHT_IMAGE);
-        inputImage = outputImage; // update the input
-    }
 }
