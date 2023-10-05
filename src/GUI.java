@@ -303,6 +303,8 @@ public class GUI extends JFrame implements ActionListener {
     private class HistogramEqualizationActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            int inputVal = imageHandler.getCurrentImage().getHeight();
+
             JDialog popUpDialog = new JDialog(frame, "Equalize Histogram", true);
             popUpDialog.setLayout(new GridLayout(3, 1));
 
@@ -311,6 +313,9 @@ public class GUI extends JFrame implements ActionListener {
             ButtonGroup buttonGroup = new ButtonGroup();
             buttonGroup.add(option1Btn);
             buttonGroup.add(option2Btn);
+            JTextField input = new JTextField(String.valueOf(inputVal), 3);
+
+
             option1Btn.setSelected(true);
 
             JPanel buttonPanel = new JPanel();
@@ -319,15 +324,16 @@ public class GUI extends JFrame implements ActionListener {
 
             popUpDialog.add(option1Btn);
             popUpDialog.add(option2Btn);
+            popUpDialog.add(input);
             popUpDialog.add(buttonPanel);
 
             executeBtn.addActionListener(e1 -> {
                 if(option1Btn.isSelected()) {
                     System.out.println("Global is selected");
-                } else if (option2Btn.isSelected()) {
-                    System.out.println("Local is selected");
                 } else {
-
+                    int inputValue = Integer.parseInt(input.getText());
+                    System.out.println("Local is selected");
+                    System.out.println(inputValue*10);
                 }
                 popUpDialog.dispose();
             });
