@@ -13,7 +13,7 @@ public class GrayLevelChanger {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
 
-        BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
                 int rgb = inputImage.getRGB(x,y) & 0xFF;

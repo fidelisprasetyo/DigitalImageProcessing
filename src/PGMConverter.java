@@ -9,16 +9,8 @@ import java.io.IOException;
 
 public class PGMConverter {
 
-    private int getGrayDepth(BufferedImage img) {
-        Raster raster = img.getData();
-        int grayDepth = raster.getSampleModel().getSampleSize(0);
-        return grayDepth;
-    }
-
     public void convertToPGM(BufferedImage image) {
         try {
-            int grayDepth = getGrayDepth(image);
-            int maxGrayLevel = (int) Math.pow(2, grayDepth) - 1;
             int width = image.getWidth();
             int height = image.getHeight();
 
@@ -45,7 +37,7 @@ public class PGMConverter {
                 writer.write("P2\n"); // ASCII format
                 writer.write("# Converted Image to PGM\n");    // comment
                 writer.write(width + " " + height + "\n");  // number of rows and columns
-                writer.write(maxGrayLevel + "\n");  // maximum gray level
+                writer.write("255" + "\n");  // maximum gray level
 
                 for(int y = 0; y < height; y++) {
                     for(int x = 0; x < width; x++) {
