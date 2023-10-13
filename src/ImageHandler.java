@@ -12,8 +12,8 @@ class ImageHandler {
     public static final int RIGHT_IMAGE = 1;
     private BufferedImage originalImage;
     private BufferedImage currentImage;
-    private JLabel leftImage;
-    private JLabel rightImage;
+    private final JLabel leftImage;
+    private final JLabel rightImage;
 
     public ImageHandler(JLabel leftImage, JLabel rightImage) {
         this.leftImage = leftImage;

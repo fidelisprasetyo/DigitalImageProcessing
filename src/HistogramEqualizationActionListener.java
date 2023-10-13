@@ -7,23 +7,20 @@ import java.awt.image.BufferedImage;
 
 public class HistogramEqualizationActionListener implements ActionListener {
 
-    private ImageHandler imageHandler;
-    private JFrame frame;
-    private int[] histogram;
+    private final ImageHandler imageHandler;
+    private final JFrame frame;
 
     public HistogramEqualizationActionListener(ImageHandler imageHandler, JFrame frame) {
         this.imageHandler = imageHandler;
         this.frame = frame;
-        HistogramEqualizer histogramEqualizer = new HistogramEqualizer(imageHandler.getCurrentImage());
-        //this.histogram = histogramEqualizer.getHistogram();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        int inputVal = imageHandler.getCurrentImage().getHeight();
+        int inputVal = 3;
 
         JDialog popUpDialog = new JDialog(frame, "Equalize Histogram", true);
-        popUpDialog.setLayout(new GridLayout(2, 1));
+        popUpDialog.setLayout(new GridLayout(1, 1));
 
         // upper panel
         JPanel popUpPanel = new JPanel();
@@ -48,64 +45,24 @@ public class HistogramEqualizationActionListener implements ActionListener {
         radioButtonPanel.add(textFieldPanel);
 
         JPanel buttonPanel = new JPanel();
-        JButton executeBtn = new JButton("Execute");
+        JButton executeBtn = new JButton("Apply");
         buttonPanel.add(executeBtn);
 
         popUpPanel.add(radioButtonPanel);
         popUpPanel.add(buttonPanel);
 
-        // lower panel
-
-//        class HistogramPlot extends JPanel {
-//            private int[] histogram;
-//
-//            public HistogramPlot(int[] histogram) {
-//                this.histogram = histogram;
-//                setPreferredSize(new Dimension(300,200));
-//            }
-//
-//            @Override
-//            protected void paintComponent(Graphics g) {
-//                super.paintComponent(g);
-//
-//                int width = getWidth();
-//                int height = getHeight();
-//
-//                int maxCount = 0;
-//                for(int count : histogram) {
-//                    if(count > maxCount) {
-//                        maxCount = count;
-//                    }
-//                }
-//
-//                g.setColor(Color.BLACK);
-//                for(int i = 0; i < 256; i++) {
-//                    int barHeight= (int) ((double) histogram[i]/maxCount*(height));
-//                    int x = i * (width/256);
-//                    int y = height - barHeight;
-//                    g.fillRect(x,y,width/256, barHeight);
-//                }
-//            }
-//        }
-
-        JPanel histPanel = new JPanel();
-        //histPanel.add(new HistogramPlot(histogram));
-        histPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
         popUpDialog.add(popUpPanel);
-        popUpDialog.add(histPanel);
 
 
         executeBtn.addActionListener(e1 -> {
+            BufferedImage outputImage;
             if(option1Btn.isSelected()) {
-                BufferedImage outputImage;
-                HistogramEqualizer histogramEqualizer = new HistogramEqualizer(imageHandler.getCurrentImage());
-                outputImage = histogramEqualizer.globalEqualization();
+                outputImage = HistogramEqualizer.globalEqualization(imageHandler.getCurrentImage());
                 imageHandler.updateBufferedImage(outputImage);
             } else {
                 int inputValue = Integer.parseInt(input.getText());
-                System.out.println("Local is selected");
-                System.out.println(inputValue*10);
+                outputImage = HistogramEqualizer.localEqualization(imageHandler.getCurrentImage(), inputValue);
+                imageHandler.updateBufferedImage(outputImage);
             }
             popUpDialog.dispose();
         });

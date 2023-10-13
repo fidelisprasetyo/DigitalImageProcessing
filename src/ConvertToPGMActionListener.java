@@ -3,7 +3,7 @@ import java.awt.event.ActionListener;
 
 public class ConvertToPGMActionListener implements ActionListener {
 
-    private ImageHandler imageHandler;
+    private final ImageHandler imageHandler;
 
     public ConvertToPGMActionListener(ImageHandler imageHandler) {
         this.imageHandler = imageHandler;
@@ -11,7 +11,6 @@ public class ConvertToPGMActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ImageOperator imageOperator = new ImageOperator();
-        imageOperator.convertToPGM(imageHandler.getCurrentImage());
+        PGMConverter.convertToPGM(imageHandler.getCurrentImage());
     }
 }

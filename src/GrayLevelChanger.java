@@ -3,7 +3,7 @@ import java.awt.image.Raster;
 
 public class GrayLevelChanger {
 
-    public BufferedImage changeGrayLevel(BufferedImage inputImage, int newDepth) {
+    public static BufferedImage changeGrayLevel(BufferedImage inputImage, int newDepth) {
         int inputDepth = getGrayDepth(inputImage);
         int inputLevel = (int) Math.pow(2, inputDepth);
         int targetLevel = (int) Math.pow(2, newDepth);
@@ -16,19 +16,18 @@ public class GrayLevelChanger {
         BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
-                int rgb = inputImage.getRGB(x,y) & 0xFF;
-                int newPixelValue = (int) Math.floor((double)rgb/inputLevel * targetLevel) * ratio;
-                int g = (newPixelValue << 16) | (newPixelValue << 8) | newPixelValue;
-                outputImage.setRGB(x,y,g);
+                int g = inputImage.getRGB(x,y) & 0xFF;
+                int newPixelValue = (int) Math.floor((double)g/inputLevel * targetLevel) * ratio;
+                int rgb = (newPixelValue << 16) | (newPixelValue << 8) | newPixelValue;
+                outputImage.setRGB(x,y,rgb);
             }
         }
 
         return outputImage;
     }
 
-    private int getGrayDepth(BufferedImage img) {
+    private static int getGrayDepth(BufferedImage img) {
         Raster raster = img.getData();
-        int grayDepth = raster.getSampleModel().getSampleSize(0);
-        return grayDepth;
+        return raster.getSampleModel().getSampleSize(0);
     }
 }

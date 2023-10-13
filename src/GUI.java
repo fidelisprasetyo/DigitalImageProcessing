@@ -2,29 +2,32 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 
 public class GUI extends JFrame implements ActionListener {
 
-    private JButton browseButton = new JButton("Browse");
-    private JButton executeButton = new JButton("Execute");
-    private JButton saveButton = new JButton("Save Output");
-    private JButton undoButton = new JButton("Undo All");
+    private final JButton executeButton = new JButton("Execute");
     static JToolBar toolBar;
     static JComboBox comboBox;
-    private ImageHandler imageHandler;
+    private final ImageHandler imageHandler;
     JFrame frame = new JFrame("Digital Image Processing");
 
     public GUI() {
 
         // prepare GUI frame
-        frame.setSize(1600, 900);
+        frame.setSize(1000, 900);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
         // prepare toolbar and combobox
         toolBar = new JToolBar();
-        comboBox = new JComboBox(new String[] {"Select an action", "Convert to PGM", "Change spatial resolution", "Change gray level resolution", "Histogram equalization"});
+        comboBox = new JComboBox(new String[] {
+                "Select an action",
+                "Convert to PGM",
+                "Change spatial resolution",
+                "Change gray level resolution",
+                "Histogram equalization",
+                "Spatial filters",
+                "Remove bit-planes"});
 
         // prepare image panels
         JLabel leftImage = new JLabel();
@@ -38,10 +41,13 @@ public class GUI extends JFrame implements ActionListener {
         imagePanelContainer.add(outputScrollPane);
 
         // place buttons and combobox into toolbar
+        JButton browseButton = new JButton("Browse");
         toolBar.add(browseButton);
         toolBar.add(executeButton);
+        JButton saveButton = new JButton("Save Output");
         toolBar.add(saveButton);
         toolBar.add(comboBox);
+        JButton undoButton = new JButton("Undo All");
         toolBar.add(undoButton);
 
         // place gui components
@@ -91,6 +97,10 @@ public class GUI extends JFrame implements ActionListener {
                     executeButton.addActionListener(new GrayResolutionActionListener(imageHandler, frame));    // change gray level resolution
                 } else if (selectedOption == 4) {
                     executeButton.addActionListener(new HistogramEqualizationActionListener(imageHandler, frame));
+                } else if (selectedOption == 5) {
+                    executeButton.addActionListener(new SpatialFilterActionListener(imageHandler, frame));
+                } else if (selectedOption == 6) {
+                    executeButton.addActionListener(new BitPlanesActionListener(imageHandler, frame));
                 }
             }
         }

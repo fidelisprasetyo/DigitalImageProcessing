@@ -5,7 +5,7 @@ public class SpatialResolutionChanger {
     public static final int LINEAR = 0;
     public static final int BILINEAR = 1;
 
-    public BufferedImage nearestNeighbor(BufferedImage inputImage, int newWidth, int newHeight) {
+    public static BufferedImage nearestNeighbor(BufferedImage inputImage, int newWidth, int newHeight) {
         int inputWidth = inputImage.getWidth();
         int inputHeight = inputImage.getHeight();
         BufferedImage outputImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
@@ -35,7 +35,7 @@ public class SpatialResolutionChanger {
         return outputImage;
     }
 
-    public BufferedImage imageInterpolation(BufferedImage inputImage, int newWidth, int newHeight, int method) {
+    public static BufferedImage imageInterpolation(BufferedImage inputImage, int newWidth, int newHeight, int method) {
         int inputWidth = inputImage.getWidth();
         int inputHeight = inputImage.getHeight();
         BufferedImage outputImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);

@@ -1,7 +1,6 @@
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -9,7 +8,7 @@ import java.io.IOException;
 
 public class PGMConverter {
 
-    public void convertToPGM(BufferedImage image) {
+    public static void convertToPGM(BufferedImage image) {
         try {
             int width = image.getWidth();
             int height = image.getHeight();
@@ -54,9 +53,5 @@ public class PGMConverter {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error! Exception code: " + e, "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    public PGMConverter() {
-
     }
 }

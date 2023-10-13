@@ -57,10 +57,8 @@ public class SpatialResolutionActionListener implements ActionListener {
         widthTextField.addActionListener(e16 -> {
             String widthInput = widthTextField.getText();
             try {
-                int curWidth = inputWidth;
                 int newWidth = Integer.parseInt(widthInput);
-
-                int newHeight = inputHeight * newWidth / curWidth;
+                int newHeight = inputHeight * newWidth / inputWidth;
                 heightTextField.setText(Integer.toString(newHeight));
 
             } catch (NumberFormatException ex) {
@@ -73,10 +71,8 @@ public class SpatialResolutionActionListener implements ActionListener {
         heightTextField.addActionListener(e15 -> {
             String heightInput = heightTextField.getText();
             try {
-                int curHeight = inputHeight;
                 int newHeight = Integer.parseInt(heightInput);
-
-                int newWidth = inputWidth * newHeight / curHeight;
+                int newWidth = inputWidth * newHeight / inputHeight;
                 widthTextField.setText(Integer.toString(newWidth));
 
             } catch (NumberFormatException ex) {
@@ -99,34 +95,31 @@ public class SpatialResolutionActionListener implements ActionListener {
             }
             else if (srOption == 1) {        // Nearest Neighbor
                 okButton.addActionListener(e13 -> {
-                    ImageOperator imageOperator = new ImageOperator();
                     BufferedImage outputImage;
                     int newWidth = Integer.parseInt(widthTextField.getText());
                     int newHeight = Integer.parseInt(heightTextField.getText());
 
-                    outputImage = imageOperator.nearestNeighbor(imageHandler.getCurrentImage(), newWidth, newHeight);
+                    outputImage = SpatialResolutionChanger.nearestNeighbor(imageHandler.getCurrentImage(), newWidth, newHeight);
                     imageHandler.updateBufferedImage(outputImage);
                     popUpDialog.dispose();
                 });
             } else if (srOption == 2) {     // Linear Interpolation
                 okButton.addActionListener(e12 -> {
-                    ImageOperator imageOperator = new ImageOperator();
                     BufferedImage outputImage;
                     int newWidth = Integer.parseInt(widthTextField.getText());
                     int newHeight = Integer.parseInt(heightTextField.getText());
 
-                    outputImage = imageOperator.linearInterpolation(imageHandler.getCurrentImage(), newWidth, newHeight);
+                    outputImage = SpatialResolutionChanger.imageInterpolation(imageHandler.getCurrentImage(), newWidth, newHeight, 0);
                     imageHandler.updateBufferedImage(outputImage);
                     popUpDialog.dispose();
                 });
             } else {            // Bilinear Interpolation
                 okButton.addActionListener(e1 -> {
-                    ImageOperator imageOperator = new ImageOperator();
                     BufferedImage outputImage;
                     int newWidth = Integer.parseInt(widthTextField.getText());
                     int newHeight = Integer.parseInt(heightTextField.getText());
 
-                    outputImage = imageOperator.bilinearInterpolation(imageHandler.getCurrentImage(), newWidth, newHeight);
+                    outputImage = SpatialResolutionChanger.imageInterpolation(imageHandler.getCurrentImage(), newWidth, newHeight, 1);
                     imageHandler.updateBufferedImage(outputImage);
                     popUpDialog.dispose();
                 });

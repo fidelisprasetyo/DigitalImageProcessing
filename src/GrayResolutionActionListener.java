@@ -47,8 +47,7 @@ public class GrayResolutionActionListener implements ActionListener {
             int newDepth = Integer.parseInt(input);
 
             BufferedImage outputImage;
-            ImageOperator imageOperator = new ImageOperator();
-            outputImage = imageOperator.changeGrayLevel(imageHandler.getCurrentImage(), newDepth);
+            outputImage = GrayLevelChanger.changeGrayLevel(imageHandler.getCurrentImage(), newDepth);
 
             imageHandler.updateBufferedImage(outputImage);
             popUpDialog.dispose();
