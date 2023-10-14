@@ -5,6 +5,9 @@ import java.util.List;
 
 public class MedianFilter {
 
+    // -- public method
+
+    // apply median filter
     public static BufferedImage applyFilter(BufferedImage inputImage, int maskSize) {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
@@ -22,6 +25,8 @@ public class MedianFilter {
         return outputImage;
     }
 
+    // return median value in the filter
+    // sort pixel values and get the middle element to return the median
     private static int getMedianPixel(BufferedImage image, int X, int Y, int maskSize) {
         int median;
         int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);

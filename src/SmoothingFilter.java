@@ -3,6 +3,8 @@ import java.util.Arrays;
 
 public class SmoothingFilter {
 
+    // -- public method
+    // apply smoothing filter
     public static BufferedImage applyFilter(BufferedImage inputImage, int maskSize) {
         double filterCoef = (double) 1/(maskSize*maskSize);
         double[][] filterMask = new double[maskSize][maskSize];

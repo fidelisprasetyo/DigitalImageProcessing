@@ -5,6 +5,8 @@ public class SpatialResolutionChanger {
     public static final int LINEAR = 0;
     public static final int BILINEAR = 1;
 
+    // --- public methods
+
     public static BufferedImage nearestNeighbor(BufferedImage inputImage, int newWidth, int newHeight) {
         int inputWidth = inputImage.getWidth();
         int inputHeight = inputImage.getHeight();

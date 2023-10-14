@@ -2,6 +2,9 @@ import java.awt.image.BufferedImage;
 
 public class BitPlaneRemover {
 
+    // -- public methods
+
+    // remove the selectedBit plane from the image
     public static BufferedImage apply(BufferedImage inputImage, int selectedBit) {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
@@ -20,6 +23,8 @@ public class BitPlaneRemover {
         }
         return outputImage;
     }
+
+    // -- private methods
 
     private static int getBitMask(int selectedBit) {
         // if 0 -> 0xFF & ~(1) -> 0xFF & 0 -> 11111110

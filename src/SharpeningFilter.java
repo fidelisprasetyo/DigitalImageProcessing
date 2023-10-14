@@ -1,25 +1,30 @@
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class SharpeningFilter {
 
+    // ---public methods
+
+    // apply laplacian sharpening
     public static BufferedImage laplacianFilter(BufferedImage inputImage, int maskSize) {
-        double[][] filterMask = generateFilter(maskSize);
+        double[][] filterMask = generateLaplacianFilter(maskSize);
         BufferedImage laplacianImage = convolution(inputImage, filterMask);
 
         return sumImages(inputImage, laplacianImage);
     }
 
+    // apply highboost filtering
     public static BufferedImage highBoostFilter(BufferedImage inputImage, int maskSize, int A) {
         BufferedImage blurredImage = SmoothingFilter.applyFilter(inputImage,maskSize);
         BufferedImage maskImage = subtractImages(inputImage, blurredImage);
         BufferedImage multipliedMask = multiplyImageByInteger(maskImage, A);
 
-        BufferedImage outputImage = sumImages(inputImage, multipliedMask);
-        return outputImage;
+        return sumImages(inputImage, multipliedMask);
     }
 
-    private static double[][] generateFilter(int maskSize) {
+    // ---private utility methods
+
+    // generate laplacian filter mask
+    private static double[][] generateLaplacianFilter(int maskSize) {
         double[][] filterMask = new double[maskSize][maskSize];
         for(int i = 0; i < maskSize; i++) {
             for(int j = 0; j < maskSize; j++) {
@@ -31,6 +36,7 @@ public class SharpeningFilter {
         return filterMask;
     }
 
+    // returns image1 + image 2
     private static BufferedImage sumImages(BufferedImage image1, BufferedImage image2) {
         int width = image1.getWidth();
         int height = image2.getHeight();
@@ -49,6 +55,7 @@ public class SharpeningFilter {
         return result;
     }
 
+    // returns image1 - image 2
     private static BufferedImage subtractImages(BufferedImage image1, BufferedImage image2) {
         int width = image1.getWidth();
         int height = image2.getHeight();
@@ -67,6 +74,7 @@ public class SharpeningFilter {
         return result;
     }
 
+    // returns A * inputImage
     private static BufferedImage multiplyImageByInteger(BufferedImage inputImage, int A) {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
@@ -84,6 +92,7 @@ public class SharpeningFilter {
         return result;
     }
 
+    // modified convolution with scaling
     private static BufferedImage convolution(BufferedImage inputImage, double[][] filterMask) {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
@@ -114,6 +123,7 @@ public class SharpeningFilter {
         return outputImage;
     }
 
+    // scale negative/ larger than 255 values
     private static int[][] normalizeValues(int[][] unscaledGray) {
         int width = unscaledGray.length;
         int height = unscaledGray[0].length;
@@ -145,6 +155,5 @@ public class SharpeningFilter {
 
         return scaledGray;
     }
-
 
 }

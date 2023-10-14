@@ -1,24 +1,29 @@
 import java.awt.image.BufferedImage;
 
+// some useful utility methods
+
 public class ImageUtil {
 
+    // return grayscale value from rgb bits
     public static int getGrayValue(BufferedImage image, int x, int y) {
         int pixel = image.getRGB(x,y) & 0xFF;
         return pixel;
     }
 
+    // convert gray value into rgb
     public static int convertGrayToRGB(int gray) {
         int rgb = (gray << 16) | (gray << 8) | gray;
         return rgb;
     }
 
+    // get gray value and convert to rgb
     public static int getGrayValueInRGB(BufferedImage image, int x, int y) {
         int pixel = getGrayValue(image, x, y);
         int rgb = convertGrayToRGB(pixel);
         return rgb;
     }
 
-    // fill outside borders with neighboring pixels
+    // fill outside borders with neighboring pixels (clamping)
     public static BufferedImage extrapolateImage(BufferedImage inputImage, int maskSize) {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
@@ -38,6 +43,7 @@ public class ImageUtil {
         return newImage;
     }
 
+    // get neighboring pixels according to maskSize
     public static int[][] extractNeighbors(BufferedImage paddedImage, int x, int y, int maskSize) {
         int[][] pixels = new int[maskSize][maskSize];
         int padding = maskSize/2;
@@ -50,6 +56,7 @@ public class ImageUtil {
         return pixels;
     }
 
+    // convolution operation
     public static BufferedImage convolution(BufferedImage inputImage, double[][] filterMask) {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
@@ -69,6 +76,7 @@ public class ImageUtil {
         return outputImage;
     }
 
+    // get the new center pixel's value
     public static int getFilteredPixel(BufferedImage image, int X, int Y, double[][] filterMask) {
         double sum = 0.0;
         int maskSize = filterMask.length;

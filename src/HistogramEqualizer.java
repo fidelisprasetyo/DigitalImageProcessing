@@ -2,6 +2,9 @@ import java.awt.image.BufferedImage;
 
 public class HistogramEqualizer {
 
+    // -- public methods
+
+    // return the histogram of the image
     public static int[] getHistogram(BufferedImage inputImage) {
         int height = inputImage.getHeight();
         int width = inputImage.getWidth();
@@ -15,6 +18,7 @@ public class HistogramEqualizer {
         return histogram;
     }
 
+    // apply global equalization
     public static BufferedImage globalEqualization(BufferedImage inputImage) {
         int height = inputImage.getHeight();
         int width = inputImage.getWidth();
@@ -45,6 +49,26 @@ public class HistogramEqualizer {
         return equalizedImage;
     }
 
+    // apply local equalization
+    public static BufferedImage localEqualization(BufferedImage inputImage, int maskSize) {
+        int height = inputImage.getHeight();
+        int width = inputImage.getWidth();
+        BufferedImage equalizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage paddedImage = ImageUtil.extrapolateImage(inputImage, maskSize);
+
+        int padding = maskSize/2;
+        for(int y = padding ; y < height + padding ; y++) {
+            for(int x = padding ; x < width + padding ; x++) {
+                int rgb = getEqualizedPixel(x,y, paddedImage, maskSize);
+                equalizedImage.setRGB(x - padding, y - padding, rgb);
+            }
+        }
+        return equalizedImage;
+    }
+
+    // -- private methods
+
+    // get the equalized center pixel according to the neighboring pixels
     private static int getEqualizedPixel(int X, int Y, BufferedImage paddedImage, int maskSize) {
         int[] cdf = new int[256];
         int[] histogram = new int[256];
@@ -73,19 +97,5 @@ public class HistogramEqualizer {
         return rgb;
     }
 
-    public static BufferedImage localEqualization(BufferedImage inputImage, int maskSize) {
-        int height = inputImage.getHeight();
-        int width = inputImage.getWidth();
-        BufferedImage equalizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        BufferedImage paddedImage = ImageUtil.extrapolateImage(inputImage, maskSize);
 
-        int padding = maskSize/2;
-        for(int y = padding ; y < height + padding ; y++) {
-            for(int x = padding ; x < width + padding ; x++) {
-                int rgb = getEqualizedPixel(x,y, paddedImage, maskSize);
-                equalizedImage.setRGB(x - padding, y - padding, rgb);
-            }
-        }
-        return equalizedImage;
-    }
 }
