@@ -35,7 +35,7 @@ class ImageHandler {
 
     public void openImage() {
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif", "bmp");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif", "bmp", "tif");
         fileChooser.setFileFilter(filter);
 
         int returnValue = fileChooser.showOpenDialog(null);

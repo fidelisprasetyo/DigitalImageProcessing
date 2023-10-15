@@ -26,8 +26,9 @@ public class GUI extends JFrame implements ActionListener {
                 "Change spatial resolution",
                 "Change gray level resolution",
                 "Histogram equalization",
-                "Spatial filters",
-                "Remove bit-planes"});
+                "Image enhancement spatial filters",
+                "Remove bit-planes",
+                "Image restoration spatial filters"});
 
         // prepare image panels
         JLabel leftImage = new JLabel();
@@ -101,6 +102,8 @@ public class GUI extends JFrame implements ActionListener {
                     executeButton.addActionListener(new SpatialFilterActionListener(imageHandler, frame));
                 } else if (selectedOption == 6) {
                     executeButton.addActionListener(new BitPlanesActionListener(imageHandler, frame));
+                } else if (selectedOption == 7) {
+                    executeButton.addActionListener(new RestorationFilterActionListener(imageHandler, frame));
                 }
             }
         }
