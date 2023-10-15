@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,7 +32,7 @@ public class BitPlanesActionListener implements ActionListener {
         sliderPanel.add(slider);
 
         JPanel buttonPanel = new JPanel();
-        JButton button = new JButton("Remove");
+        JButton button = new JButton("Apply");
         buttonPanel.add(button);
 
         popUpDialog.add(textPanel);

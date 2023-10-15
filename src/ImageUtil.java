@@ -56,38 +56,76 @@ public class ImageUtil {
         return pixels;
     }
 
-    // convolution operation
-    public static BufferedImage convolution(BufferedImage inputImage, double[][] filterMask) {
-        int width = inputImage.getWidth();
-        int height = inputImage.getHeight();
+    public static BufferedImage writeGrayIntoBufferedImage(int[][] image) {
+        int width = image.length;
+        int height = image[0].length;
 
-        int maskSize = filterMask.length;
-        int padding = maskSize/2;
+        BufferedImage outputImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
 
-        BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        BufferedImage paddedImage = ImageUtil.extrapolateImage(inputImage, maskSize);
-
-        for(int y = padding; y < height + padding; y++) {
-            for(int x = padding; x < width + padding; x++) {
-                int newPixel = getFilteredPixel(paddedImage, x, y, filterMask);
-                outputImage.setRGB(x - padding, y - padding, newPixel);
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int rgb = ImageUtil.convertGrayToRGB(image[x][y]);
+                outputImage.setRGB(x,y,rgb);
             }
         }
         return outputImage;
     }
 
-    // get the new center pixel's value
-    public static int getFilteredPixel(BufferedImage image, int X, int Y, double[][] filterMask) {
-        double sum = 0.0;
-        int maskSize = filterMask.length;
-        int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
+    // returns image1 + image 2
+    public static BufferedImage sumImages(BufferedImage image1, BufferedImage image2) {
+        int width = image1.getWidth();
+        int height = image2.getHeight();
 
-        for(int y = 0; y < filterMask.length; y++) {
-            for(int x = 0; x < filterMask.length; x++) {
-                sum += (double) imageSegment[x][y] * filterMask[x][y];
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int gray1 = ImageUtil.getGrayValue(image1,x,y);
+                int gray2 = ImageUtil.getGrayValue(image2,x,y);
+                int sumGray = Math.min(255, gray1+gray2);
+                int rgb = ImageUtil.convertGrayToRGB(sumGray);
+                result.setRGB(x,y,rgb);
             }
         }
-        return convertGrayToRGB((int) Math.round(sum));
+        return result;
     }
+
+    // returns image1 - image 2
+    public static BufferedImage subtractImages(BufferedImage image1, BufferedImage image2) {
+        int width = image1.getWidth();
+        int height = image2.getHeight();
+
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int gray1 = ImageUtil.getGrayValue(image1,x,y);
+                int gray2 = ImageUtil.getGrayValue(image2,x,y);
+                int sumGray = Math.max(0, gray1-gray2);
+                int rgb = ImageUtil.convertGrayToRGB(sumGray);
+                result.setRGB(x,y,rgb);
+            }
+        }
+        return result;
+    }
+
+    // returns A * inputImage
+    public static BufferedImage multiplyImageByInteger(BufferedImage inputImage, int A) {
+        int width = inputImage.getWidth();
+        int height = inputImage.getHeight();
+
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int gray = ImageUtil.getGrayValue(inputImage, x, y);
+                int multipliedGray = Math.min(255, A*gray);
+                int rgb = ImageUtil.convertGrayToRGB(multipliedGray);
+                result.setRGB(x,y,rgb);
+            }
+        }
+        return result;
+    }
+
 
 }
