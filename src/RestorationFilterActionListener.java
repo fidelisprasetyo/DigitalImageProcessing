@@ -60,14 +60,24 @@ public class RestorationFilterActionListener implements ActionListener {
                 outputImage = SmoothingFilter.applyFilter(inputImage, inputValue);
                 imageHandler.updateBufferedImage(outputImage);
             } else if (selectedIndex == 1) {
-                // TODO
-                //imageHandler.updateBufferedImage(outputImage);
+                outputImage = GeometricMeanFilter.applyFilter(inputImage, inputValue);
+                imageHandler.updateBufferedImage(outputImage);
             } else if (selectedIndex == 2) {
+                outputImage = HarmonicMeanFilter.applyFilter(inputImage, inputValue);
+                imageHandler.updateBufferedImage(outputImage);
+            } else if (selectedIndex == 3) {
                 // TODO
                 //imageHandler.updateBufferedImage(outputImage);
-            } else {
+            } else if (selectedIndex == 4) {
+                outputImage = MinMaxFilter.applyMaxFilter(inputImage, inputValue);
+                imageHandler.updateBufferedImage(outputImage);
+            } else if (selectedIndex == 5) {
+                outputImage = MinMaxFilter.applyMinFilter(inputImage, inputValue);
+                imageHandler.updateBufferedImage(outputImage);
+            } else if (selectedIndex == 6) {
                 // TODO
-                //imageHandler.updateBufferedImage(outputImage);
+            } else if (selectedIndex == 7) {
+                // TODO
             }
 
             popUpDialog.dispose();

@@ -10,21 +10,20 @@ public class SharpeningFilter {
 
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
-        int[][] unscaledImage = new int[width][height];
-        BufferedImage laplacianImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int[][] unscaledGray = new int[width][height];
 
         int padding = maskSize/2;
         BufferedImage paddedImage = ImageUtil.extrapolateImage(inputImage, maskSize);
 
         for(int y = padding; y < height + padding; y++) {
             for(int x = padding; x < width + padding; x++) {
-                int newValue = getFilteredPixel(paddedImage, x, y, filterMask);
-                unscaledImage[x-padding][y-padding] = newValue;
+                int newValue = computePixel(paddedImage, x, y, filterMask);     // convolution
+                unscaledGray[x-padding][y-padding] = newValue;
             }
         }
 
-        int[][] scaledImage = normalizeValues(unscaledImage);
-        laplacianImage = ImageUtil.writeGrayIntoBufferedImage(scaledImage);
+        int[][] scaledGray = ImageUtil.normalizeGrayLevels(unscaledGray);
+        BufferedImage laplacianImage = ImageUtil.writeGrayIntoBufferedImage(scaledGray);
 
         return ImageUtil.sumImages(inputImage, laplacianImage);
     }
@@ -37,6 +36,7 @@ public class SharpeningFilter {
 
         return ImageUtil.sumImages(inputImage, multipliedMask);
     }
+
 
     // ---private methods
 
@@ -53,7 +53,7 @@ public class SharpeningFilter {
         return filterMask;
     }
 
-    private static int getFilteredPixel(BufferedImage image, int X, int Y, int[][] filterMask) {
+    private static int computePixel(BufferedImage image, int X, int Y, int[][] filterMask) {
         double sum = 0.0;
         int maskSize = filterMask.length;
         int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
@@ -64,39 +64,6 @@ public class SharpeningFilter {
             }
         }
         return ImageUtil.convertGrayToRGB((int) Math.round(sum));
-    }
-
-    // scale negative/ larger than 255 values
-    private static int[][] normalizeValues(int[][] unscaledGray) {
-        int width = unscaledGray.length;
-        int height = unscaledGray[0].length;
-
-        int[][] scaledGray = new int[width][height];
-
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-
-        for(int y = 0; y < height; y++) {
-            for(int x = 0; x < width; x++) {
-                int pixel = unscaledGray[x][y];
-                if(pixel < min) {
-                    min = pixel;
-                }
-                if(pixel > max) {
-                    max = pixel;
-                }
-            }
-        }
-
-        for(int y = 0; y < height; y++) {
-            for(int x = 0; x < width; x++) {
-                int pixel = unscaledGray[x][y];
-                int normalizedPixel = (int) Math.round((pixel - min) * (255.0/(max-min)));
-                scaledGray[x][y] = normalizedPixel;
-            }
-        }
-
-        return scaledGray;
     }
 
 }

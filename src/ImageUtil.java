@@ -56,6 +56,7 @@ public class ImageUtil {
         return pixels;
     }
 
+    // convert 2d matrix of grayscale values into BufferedImage
     public static BufferedImage writeGrayIntoBufferedImage(int[][] image) {
         int width = image.length;
         int height = image[0].length;
@@ -127,5 +128,56 @@ public class ImageUtil {
         return result;
     }
 
+    // scale negative/ larger than 255 values
+    public static int[][] normalizeGrayLevels(int[][] unscaledGray) {
+        int width = unscaledGray.length;
+        int height = unscaledGray[0].length;
 
+        int[][] scaledGray = new int[width][height];
+
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int pixel = unscaledGray[x][y];
+                if(pixel < min) {
+                    min = pixel;
+                }
+                if(pixel > max) {
+                    max = pixel;
+                }
+            }
+        }
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int pixel = unscaledGray[x][y];
+                int normalizedPixel = (int) Math.round((pixel - min) * (255.0/(max-min)));
+                scaledGray[x][y] = normalizedPixel;
+            }
+        }
+        return scaledGray;
+    }
+
+    // compute the pixel by doing mathematical operation on the kernel window (neighboring pixels)
+    // PixelProcessor defines the desired calculation
+    // is defined using lambda expression in Filter's class
+    public static BufferedImage convolution(BufferedImage inputImage, int maskSize, PixelProcessor pixelProcessor) {
+        int width = inputImage.getWidth();
+        int height = inputImage.getHeight();
+
+        int padding = maskSize/2;
+
+        BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage paddedImage = ImageUtil.extrapolateImage(inputImage, maskSize);
+
+        for(int y = padding; y < height + padding; y++) {
+            for(int x = padding; x < width + padding; x++) {
+                int newPixel = pixelProcessor.computeCenterPixel(paddedImage, x, y);
+                int rgb = ImageUtil.convertGrayToRGB(newPixel);
+                outputImage.setRGB(x - padding, y - padding, rgb);
+            }
+        }
+        return outputImage;
+    }
 }
