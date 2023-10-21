@@ -33,8 +33,15 @@ class ImageHandler {
         }
     }
 
+    private File lastOpenedDirectory;
+
     public void openImage() {
         JFileChooser fileChooser = new JFileChooser();
+
+        if (lastOpenedDirectory != null) {
+            fileChooser.setCurrentDirectory(lastOpenedDirectory);
+        }
+
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif", "bmp", "tif");
         fileChooser.setFileFilter(filter);
 
@@ -42,6 +49,8 @@ class ImageHandler {
 
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
+
+            lastOpenedDirectory = selectedFile.getParentFile();
             try {
                 originalImage = ImageIO.read(selectedFile);
                 if (originalImage != null) {
@@ -62,8 +71,15 @@ class ImageHandler {
         updateDisplayedImage(currentImage, RIGHT_IMAGE);
     }
 
+    private File lastSavedDirectory;
+
     public void saveOutputImage() {
         JFileChooser fileChooser = new JFileChooser();
+
+        if (lastSavedDirectory != null) {
+            fileChooser.setCurrentDirectory(lastSavedDirectory);
+        }
+
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "png", "jpg", "gif");
 
         fileChooser.setDialogTitle("Save Output Image File");
@@ -73,6 +89,8 @@ class ImageHandler {
         if(userSelection == JFileChooser.APPROVE_OPTION) {
             File outputFile = fileChooser.getSelectedFile();
             String filePath = outputFile.getPath();
+
+            lastSavedDirectory = outputFile.getParentFile();
 
             if(!filePath.endsWith(".png")) {
                 filePath += ".png";

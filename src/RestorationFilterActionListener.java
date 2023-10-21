@@ -19,7 +19,7 @@ public class RestorationFilterActionListener implements ActionListener {
         int defaultValue = 3;
 
         JDialog popUpDialog = new JDialog(frame, "Apply Selected Filter", true);
-        popUpDialog.setLayout(new GridLayout(3, 1));
+        popUpDialog.setLayout(new GridLayout(4, 1));
 
         JPanel comboBoxPanel = new JPanel();
         JComboBox<String> comboBox = new JComboBox(new String[] {
@@ -38,8 +38,14 @@ public class RestorationFilterActionListener implements ActionListener {
         JLabel text = new JLabel("Mask resolution");
         JTextField inputField = new JTextField(String.valueOf(defaultValue), 3);
 
+        JPanel textFieldPanel2 = new JPanel();
+        JLabel text2 = new JLabel();
+        JTextField inputField2 = new JTextField("0", 3);
+
         textFieldPanel.add(text);
         textFieldPanel.add(inputField);
+        textFieldPanel2.add(text2);
+        textFieldPanel2.add(inputField2);
 
         JPanel buttonPanel = new JPanel();
         JButton applyButton = new JButton("Apply");
@@ -47,7 +53,23 @@ public class RestorationFilterActionListener implements ActionListener {
 
         popUpDialog.add(comboBoxPanel);
         popUpDialog.add(textFieldPanel);
+        popUpDialog.add(textFieldPanel2);
         popUpDialog.add(buttonPanel);
+
+        textFieldPanel2.setVisible(false);
+
+        comboBox.addActionListener(e12 -> {
+            int selectedIndex = comboBox.getSelectedIndex();
+            if (selectedIndex == 3) {
+                text2.setText("Order");
+                textFieldPanel2.setVisible(true);
+            } else if (selectedIndex == 7) {
+                text2.setText("d value");
+                textFieldPanel2.setVisible(true);
+            } else {
+                textFieldPanel2.setVisible(false);
+            }
+        });
 
         applyButton.addActionListener(e1 -> {
             int inputValue = Integer.parseInt(inputField.getText());
@@ -66,8 +88,9 @@ public class RestorationFilterActionListener implements ActionListener {
                 outputImage = HarmonicMeanFilter.applyFilter(inputImage, inputValue);
                 imageHandler.updateBufferedImage(outputImage);
             } else if (selectedIndex == 3) {
-                // TODO
-                //imageHandler.updateBufferedImage(outputImage);
+                double orderValue = Double.parseDouble(inputField2.getText());
+                outputImage = ContraharmonicMeanFilter.applyFilter(inputImage, inputValue, orderValue);
+                imageHandler.updateBufferedImage(outputImage);
             } else if (selectedIndex == 4) {
                 outputImage = MinMaxFilter.applyMaxFilter(inputImage, inputValue);
                 imageHandler.updateBufferedImage(outputImage);
@@ -75,15 +98,19 @@ public class RestorationFilterActionListener implements ActionListener {
                 outputImage = MinMaxFilter.applyMinFilter(inputImage, inputValue);
                 imageHandler.updateBufferedImage(outputImage);
             } else if (selectedIndex == 6) {
-                // TODO
+                outputImage = MinMaxFilter.applyMidpointFilter(inputImage, inputValue);
+                imageHandler.updateBufferedImage(outputImage);
             } else if (selectedIndex == 7) {
-                // TODO
+                int dValue = Integer.parseInt(inputField2.getText());
+                outputImage = AlphaTrimmedMeanFilter.applyFilter(inputImage, inputValue, dValue);
+                imageHandler.updateBufferedImage(outputImage);
             }
+
 
             popUpDialog.dispose();
         });
 
-        popUpDialog.setSize(200,150);
+        popUpDialog.setSize(200,200);
         popUpDialog.setLocationRelativeTo(frame);
         popUpDialog.setVisible(true);
     }

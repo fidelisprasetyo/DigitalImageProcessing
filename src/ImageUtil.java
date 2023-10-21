@@ -166,6 +166,8 @@ public class ImageUtil {
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
 
+        int[][] unscaledGray = new int[width][height];
+
         int padding = maskSize/2;
 
         BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -174,10 +176,12 @@ public class ImageUtil {
         for(int y = padding; y < height + padding; y++) {
             for(int x = padding; x < width + padding; x++) {
                 int newPixel = pixelProcessor.computeCenterPixel(paddedImage, x, y);
-                int rgb = ImageUtil.convertGrayToRGB(newPixel);
-                outputImage.setRGB(x - padding, y - padding, rgb);
+                unscaledGray[x-padding][y-padding] = newPixel;
             }
         }
+
+        int[][] scaledGray = ImageUtil.normalizeGrayLevels(unscaledGray);
+        outputImage = ImageUtil.writeGrayIntoBufferedImage(scaledGray);
         return outputImage;
     }
 }

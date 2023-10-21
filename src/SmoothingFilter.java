@@ -7,7 +7,7 @@ public class SmoothingFilter {
     public static BufferedImage applyFilter(BufferedImage inputImage, int maskSize) {
 
         PixelProcessor arithmeticMean = (image, X, Y) -> {
-            int sum = 0;
+            double sum = 0.0;
             int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
 
             for(int y = 0; y < maskSize; y++) {
@@ -15,7 +15,7 @@ public class SmoothingFilter {
                     sum += imageSegment[x][y];
                 }
             }
-            double mean = (double) sum/ (maskSize*maskSize);
+            double mean = sum/ (maskSize*maskSize);
             return (int) Math.round(mean);
         };
 

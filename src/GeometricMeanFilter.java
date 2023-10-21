@@ -8,14 +8,18 @@ public class GeometricMeanFilter {
 
         PixelProcessor geometricMean = (image, X, Y) -> {
             double prod = 1.0;
+            int count = 0;
             int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
 
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
-                    prod *= imageSegment[x][y];
+                    if(imageSegment[x][y] != 0) {
+                        prod *= imageSegment[x][y];
+                        count++;
+                    }
                 }
             }
-            double exp = 1.0 / (double) (maskSize*maskSize);
+            double exp = 1.0 / count;
             double mean = Math.pow(prod, exp);
             return (int) Math.round(mean);
         };
