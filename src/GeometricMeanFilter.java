@@ -13,10 +13,12 @@ public class GeometricMeanFilter {
 
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
-                    if(imageSegment[x][y] != 0) {
+                    if(imageSegment[x][y] == 0) {
+                        prod *= 1;
+                    } else {
                         prod *= imageSegment[x][y];
-                        count++;
                     }
+                    count++;
                 }
             }
             double exp = 1.0 / count;

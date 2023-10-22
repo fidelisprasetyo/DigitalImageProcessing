@@ -14,12 +14,14 @@ public class HarmonicMeanFilter {
 
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
-                    if(imageSegment[x][y] != 0) {
-                        double fraction = 1/(double) imageSegment[x][y];
-                        sum += fraction;
-                        count++;
+                    double fraction;
+                    if(imageSegment[x][y] == 0) {
+                        fraction = 1.0/ 0.01;
+                    } else {
+                        fraction = 1.0 /(double) imageSegment[x][y];
                     }
-
+                    sum += fraction;
+                    count++;
                 }
             }
             double mean = count/sum;
