@@ -10,7 +10,7 @@ public class HarmonicMeanFilter {
         PixelProcessor harmonicMean = (image, X, Y) -> {
             double sum = 0.0;
             int count = 0;
-            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
+            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize, 0);
 
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
@@ -25,7 +25,9 @@ public class HarmonicMeanFilter {
                 }
             }
             double mean = count/sum;
-            return (int) Math.round(mean);
+
+            int gray = (int) Math.round(mean);
+            return ImageUtil.convertGrayToRGB(gray);
         };
 
         return ImageUtil.convolution(inputImage, maskSize, harmonicMean);

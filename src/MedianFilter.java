@@ -12,7 +12,7 @@ public class MedianFilter {
 
         PixelProcessor getMedian = (image, X, Y) -> {
             int median;
-            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
+            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize, 0);
             List<Integer> pixelList = new ArrayList();
 
             for(int i = 0; i < maskSize; i++) {
@@ -28,7 +28,7 @@ public class MedianFilter {
             } else {
                 median = pixelList.get(n/2);
             }
-            return median;
+            return ImageUtil.convertGrayToRGB(median);
         };
 
         return ImageUtil.convolution(inputImage, maskSize, getMedian);

@@ -8,7 +8,7 @@ public class SmoothingFilter {
 
         PixelProcessor arithmeticMean = (image, X, Y) -> {
             double sum = 0.0;
-            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
+            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize, 0);
 
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
@@ -16,31 +16,11 @@ public class SmoothingFilter {
                 }
             }
             double mean = sum/ (maskSize*maskSize);
-            return (int) Math.round(mean);
+            int gray = (int) Math.round(mean);
+            return ImageUtil.convertGrayToRGB(gray);
         };
 
         return ImageUtil.convolution(inputImage, maskSize, arithmeticMean);
-    }
-
-    // not used: weighted mask
-    private static double[][] generateWeightedMask(int maskSize) {
-        double[][] weightedMask = new double[maskSize][maskSize];
-        int center = maskSize/2;
-        int total = 0;
-
-        for(int i = 0; i < maskSize; i++) {
-            for(int j = 0; j < maskSize; j++) {
-                int distance = Math.abs(i - center) + Math.abs(j - center);
-                weightedMask[i][j] = Math.pow(2,(maskSize-1)-distance);
-                total += weightedMask[i][j];
-            }
-        }
-        for(int i = 0; i < maskSize; i++) {
-            for(int j = 0; j < maskSize; j++) {
-                weightedMask[i][j] = weightedMask[i][j] / total;
-            }
-        }
-        return weightedMask;
     }
 
 }

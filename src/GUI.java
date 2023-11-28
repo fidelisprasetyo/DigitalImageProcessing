@@ -28,7 +28,8 @@ public class GUI extends JFrame implements ActionListener {
                 "Histogram equalization",
                 "Image enhancement spatial filters",
                 "Remove bit-planes",
-                "Image restoration spatial filters"});
+                "Image restoration spatial filters",
+                "Kuwahara Filter"});
 
         // prepare image panels
         JLabel leftImage = new JLabel();
@@ -85,7 +86,7 @@ public class GUI extends JFrame implements ActionListener {
             for(ActionListener listener : listeners) {
                 executeButton.removeActionListener(listener);
             }
-            if(imageHandler.isInputNull()) {
+            if(imageHandler.isInputNull()) { //DEBUG MODEDEDEDE
                 executeButton.addActionListener(e1 -> JOptionPane.showMessageDialog(null, "No input file!", "Error", JOptionPane.ERROR_MESSAGE));
             } else {
                 if (selectedOption == 0) {  // nothing
@@ -104,6 +105,8 @@ public class GUI extends JFrame implements ActionListener {
                     executeButton.addActionListener(new BitPlanesActionListener(imageHandler, frame));
                 } else if (selectedOption == 7) {
                     executeButton.addActionListener(new RestorationFilterActionListener(imageHandler, frame));
+                } else if (selectedOption == 8) {
+                    executeButton.addActionListener(new KuwaharaFilterActionListener(imageHandler, frame));
                 }
             }
         }

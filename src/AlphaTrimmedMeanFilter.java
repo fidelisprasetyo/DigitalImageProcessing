@@ -12,8 +12,8 @@ public class AlphaTrimmedMeanFilter {
 
         PixelProcessor alphaTrimmedMean = (image, X, Y) -> {
 
-            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
-            List<Integer> pixelList = new ArrayList();
+            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize, 0);
+            List<Integer> pixelList = new ArrayList<Integer>();
 
             for(int i = 0; i < maskSize; i++) {
                 for(int j = 0; j < maskSize; j++) {
@@ -29,8 +29,9 @@ public class AlphaTrimmedMeanFilter {
                 sum += pixelList.get(i);
                 count++;
             }
+            int gray = (int) Math.round((double) sum/count);
 
-            return (int) Math.round((double) sum/count);
+            return ImageUtil.convertGrayToRGB(gray);
 
         };
 

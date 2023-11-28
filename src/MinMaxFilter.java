@@ -6,7 +6,7 @@ public class MinMaxFilter {
 
         PixelProcessor maxPixel = (image, X, Y) -> {
             int max = 0;
-            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
+            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize, 0);
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
                     if(imageSegment[x][y] > max) {
@@ -14,7 +14,7 @@ public class MinMaxFilter {
                     }
                 }
             }
-            return max;
+            return ImageUtil.convertGrayToRGB(max);
         };
 
         return ImageUtil.convolution(inputImage, maskSize, maxPixel);
@@ -24,7 +24,7 @@ public class MinMaxFilter {
 
         PixelProcessor minPixel = (image, X, Y) -> {
             int min = 255;
-            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
+            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize, 0);
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
                     if(imageSegment[x][y] < min) {
@@ -32,7 +32,7 @@ public class MinMaxFilter {
                     }
                 }
             }
-            return min;
+            return ImageUtil.convertGrayToRGB(min);
         };
 
         return ImageUtil.convolution(inputImage, maskSize, minPixel);
@@ -42,7 +42,7 @@ public class MinMaxFilter {
         PixelProcessor midPixel = (image, X, Y) -> {
             int max = 0;
             int min = 255;
-            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize);
+            int[][] imageSegment = ImageUtil.extractNeighbors(image, X, Y, maskSize, 0);
             for(int y = 0; y < maskSize; y++) {
                 for(int x = 0; x < maskSize; x++) {
                     if(imageSegment[x][y] < min) {
@@ -53,7 +53,8 @@ public class MinMaxFilter {
                     }
                 }
             }
-            return (int) Math.round((double) (min+max)/2);
+            int gray = (int) Math.round((double) (min+max)/2);
+            return ImageUtil.convertGrayToRGB(gray);
         };
 
         return ImageUtil.convolution(inputImage, maskSize, midPixel);

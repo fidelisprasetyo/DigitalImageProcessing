@@ -54,7 +54,7 @@ public class HistogramEqualizer {
         int height = inputImage.getHeight();
         int width = inputImage.getWidth();
         BufferedImage equalizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        BufferedImage paddedImage = ImageUtil.extrapolateImage(inputImage, maskSize);
+        BufferedImage paddedImage = ImageUtil.paddedImage(inputImage, maskSize);
 
         int padding = maskSize/2;
         for(int y = padding ; y < height + padding ; y++) {
