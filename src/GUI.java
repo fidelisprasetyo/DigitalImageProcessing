@@ -29,7 +29,8 @@ public class GUI extends JFrame implements ActionListener {
                 "Image enhancement spatial filters",
                 "Remove bit-planes",
                 "Image restoration spatial filters",
-                "Kuwahara Filter"});
+                "Kuwahara Filter",
+                "Image Compression"});
 
         // prepare image panels
         JLabel leftImage = new JLabel();
@@ -107,6 +108,8 @@ public class GUI extends JFrame implements ActionListener {
                     executeButton.addActionListener(new RestorationFilterActionListener(imageHandler, frame));
                 } else if (selectedOption == 8) {
                     executeButton.addActionListener(new KuwaharaFilterActionListener(imageHandler, frame));
+                } else if (selectedOption == 9) {
+                    executeButton.addActionListener(new CompressionActionListener(imageHandler, frame));
                 }
             }
         }

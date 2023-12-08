@@ -1,7 +1,14 @@
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 
 // some useful utility methods
 
@@ -77,6 +84,30 @@ public class ImageUtil {
         return pixels;
     }
 
+    public static int[][] convertBufferedImageToMatrix(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[][] imageMatrix = new int[height][width];
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageMatrix[y][x] = getGrayValue(image, x, y);
+            }
+        }
+        return imageMatrix;
+    }
+
+    public static byte[] bufferedImageToByte(BufferedImage image, String format) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, format, baos);
+        byte[] bytes = baos.toByteArray();
+        return bytes;
+    }
+
+    public static BufferedImage byteToBufferedImage(byte[] bytes) throws IOException {
+        InputStream is = new ByteArrayInputStream(bytes);
+        BufferedImage output = ImageIO.read(is);
+        return output;
+    }
 
     // convert 2d matrix of rgb values into BufferedImage
     public static BufferedImage writeRGBIntoBufferedImage(int[][] image) {
