@@ -46,7 +46,7 @@ public class CompressionActionListener implements ActionListener {
                 }
             } else if (selectedIndex == 1) {
                 try {
-                    BitPlaneCoding.encode(imageHandler.getCurrentImage(), "bmp");
+                    BitPlaneCoding.encode(imageHandler.getCurrentImage());
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
@@ -66,11 +66,12 @@ public class CompressionActionListener implements ActionListener {
                 }
             } else if (selectedIndex == 1) {
                 try {
-                    imageHandler.updateBufferedImage(BitPlaneCoding.decode());
+                    imageHandler.updateBufferedImage(BitPlaneCoding.decode(imageHandler.getCurrentImage()));
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
             }
+            popUpDialog.dispose();
         });
 
         popUpDialog.setSize(300,200);

@@ -1,111 +1,143 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BitPlaneCoding {
 
-    public static void encode(BufferedImage image, String format) throws IOException {
-        long startTime = System.nanoTime();
-        List<byte[]> bitPlanes = bufferedImageToBitPlanes(image);
+    private static int[][][] decomposeImage(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        int[][][] bitPlane = new int[8][height][width];
+
+        for(int i = 0; i < 8; i++) {
+
+            for(int y = 0; y < height; y++) {
+                for(int x = 0; x < width; x++) {
+                    int gray = ImageUtil.getGrayValue(image, x, y);
+                    int bit = ((gray & (1 << i)) >> i);
+                    bitPlane[i][y][x] = bit;
+                }
+            }
+        }
+        return bitPlane;
+    }
+
+    public static void encode(BufferedImage image) throws IOException {
+        int[][][] bitPlane = decomposeImage(image);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
+        int height = image.getHeight();
+        int width = image.getWidth();
 
-        for (int i = 0; i < 8; i++) {
-            encodeBitPlane(bitPlanes.get(i), output);
+        long startTime = System.nanoTime();
+
+        for(int i = 0; i < 8; i++) {
+            for(int y = 0; y < height; y++) {
+
+                int cur = bitPlane[i][y][0];
+                int count = 1;
+
+                if(cur == 1) {
+                    output.write((byte) 0);
+                }
+
+                for(int x = 1; x < width; x++) {
+                    int next = bitPlane[i][y][x];
+                    if(cur == next) {
+                        count++;
+                    } else {
+                        output.write((byte) count);
+                        count = 1;
+                        cur = next;
+                    }
+                }
+                output.write((byte) count);
+                if(y == height - 1) continue;
+                output.write((byte)254); // change row
+            }
+            if(i == 7) continue;
+            output.write((byte)255); // change bit plane
         }
         long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
         System.out.println("Total encode runtime: " + totalTime);
 
         saveDialog(output, "bin");
-        output.close();
-
     }
 
-    public static BufferedImage decode() throws IOException {
-        List<byte[]> bitPlanes = new ArrayList<>();
+    public static BufferedImage decode(BufferedImage image) throws IOException {
 
+        String filePath = loadDialog();
+        byte[] imageBytes = getByteArrayFromFile(filePath);
 
-        for (int i = 0; i < 8; i++) {
-            String filePath = loadDialog();
-            bitPlanes.add(getByteArrayFromFile(filePath));
-        }
+        int height = image.getHeight();
+        int width = image.getWidth();
+
+        int[][][] bitPlane = new int[8][height][width];
+        int x = 0;
+        int y = 0;
+        int plane = 0;
+        boolean zero = true;
 
         long startTime = System.nanoTime();
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-        for (int i = 0; i < bitPlanes.get(0).length; i++) {
-            byte[] pixel = new byte[8];
-            for (int j = 0; j < 8; j++) {
-                pixel[j] = bitPlanes.get(j)[i];
+        for(byte b : imageBytes) {
+            int count = b & 0xFF;
+
+            if(count == 254) {
+                y++;
+                x = 0;
+                zero = true;
+            } else if (count == 255) {
+                plane++;
+                y = 0;
+                x = 0;
+                zero = true;
+            } else {
+                for(int i = 0; i < count; i++) {
+                    if (zero) {
+                        bitPlane[plane][y][x] = 0;
+                    } else {
+                        bitPlane[plane][y][x] = 1;
+                    }
+                    x++;
+                }
+                zero = !zero;
             }
-            output.write(getByteFromBitPlane(pixel));
         }
+
         long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
         System.out.println("Total encode runtime: " + totalTime);
 
-        saveDialog(output, "bmp");
-        output.close();
-
-        byte[] savedImage = output.toByteArray();
-        return ImageUtil.byteToBufferedImage(savedImage);
+        return bitPlaneToBufferedimage(bitPlane, width, height);
     }
 
-    public static List<byte[]> bufferedImageToBitPlanes(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-
-        int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
-
-        List<byte[]> bitPlanes = new ArrayList<>();
-        for (int i = 7; i >= 0; i--) {
-            byte[] bitPlane = new byte[width * height];
-
-            for (int j = 0; j < pixels.length; j++) {
-                int pixelValue = (pixels[j] >> i) & 0x01; // Extract the i-th bit
-                bitPlane[j] = (byte) pixelValue;
-            }
-            bitPlanes.add(bitPlane);
-        }
-
-        return bitPlanes;
-    }
-
-    private static void encodeBitPlane(byte[] bitPlane, ByteArrayOutputStream output) throws IOException {
-        byte cur = bitPlane[0];
-        int count = 1;
-
-        for (int i = 1; i < bitPlane.length; i++) {
-            byte next = bitPlane[i];
-            if (next == cur) {
-                count++;
-            } else if (count == 255) {
-                output.write((byte) count);
-                output.write(cur);
-                count = 1;
-                cur = next;
-            } else {
-                output.write((byte) count);
-                output.write(cur);
-                count = 1;
-                cur = next;
+    private static BufferedImage bitPlaneToBufferedimage(int[][][] bitPlane, int width, int height) {
+        BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int value = 0;
+                for(int i = 0; i < 8; i++) {
+                    value += (bitPlane[i][y][x] << i);
+                }
+                int pixel = ImageUtil.convertGrayToRGB(value);
+                outputImage.setRGB(x,y, pixel);
             }
         }
-        output.write((byte) count);
-        output.write(cur);
+        return outputImage;
     }
 
     private static byte[] getByteArrayFromFile(String filePath) throws IOException {
-        try (InputStream inputStream = new FileInputStream(filePath)) {
+        try(InputStream inputStream = new FileInputStream(filePath)) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int bytesRead;
 
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
+            while((bytesRead = inputStream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, bytesRead);
             }
             return byteArrayOutputStream.toByteArray();
@@ -115,12 +147,12 @@ public class BitPlaneCoding {
     private static String loadDialog() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Load a file");
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Bit Plane files", "bin");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("bin files", "bin");
         fileChooser.setFileFilter(filter);
 
         int result = fileChooser.showOpenDialog(null);
 
-        if (result == JFileChooser.APPROVE_OPTION) {
+        if(result == JFileChooser.APPROVE_OPTION) {
             return fileChooser.getSelectedFile().getAbsolutePath();
         } else {
             return null;
@@ -136,14 +168,16 @@ public class BitPlaneCoding {
 
         int userSelection = fileChooser.showSaveDialog(null);
 
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
+        if(userSelection == JFileChooser.APPROVE_OPTION) {
             String filePath = fileChooser.getSelectedFile().getAbsolutePath();
 
-            if (!filePath.endsWith("." + format)) {
+            if(!filePath.endsWith("." + format)) {
                 filePath += "." + format;
             }
 
-            try (OutputStream outputStream = new FileOutputStream(filePath)) {
+            OutputStream outputStream;
+            try {
+                outputStream = new FileOutputStream(filePath);
                 output.writeTo(outputStream);
                 JOptionPane.showMessageDialog(null, "File saved successfully!");
             } catch (IOException e) {
@@ -153,11 +187,4 @@ public class BitPlaneCoding {
         }
     }
 
-    private static byte getByteFromBitPlane(byte[] bits) {
-        byte result = 0;
-        for (int i = 0; i < 8; i++) {
-            result |= (bits[i] & 1) << (7 - i);
-        }
-        return result;
-    }
 }
