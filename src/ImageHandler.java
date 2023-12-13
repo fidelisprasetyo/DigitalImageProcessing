@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 
@@ -112,12 +111,6 @@ class ImageHandler {
 
     public BufferedImage getCurrentImage() {
         return currentImage;
-    }
-
-    public int getGrayDepth(BufferedImage img) {
-        Raster raster = img.getData();
-        int grayDepth = raster.getSampleModel().getSampleSize(0);
-        return grayDepth;
     }
 
 }

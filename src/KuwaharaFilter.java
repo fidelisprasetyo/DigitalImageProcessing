@@ -1,10 +1,6 @@
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class KuwaharaFilter {
 
@@ -135,7 +131,7 @@ public class KuwaharaFilter {
     public static BufferedImage proposedKuwahara(BufferedImage inputImage, double sigma, int N, int q) {
 
         double[][] kernel = createGaussianKernel(sigma, 3);
-        double[][] kernelQuarter = createGaussianKernel(sigma/4, 12);
+        double[][] kernelQuarter = createGaussianKernel(sigma/4, 12);   // NOT USED
 
         int kernelSize = kernel.length;
         int half = kernelSize /2;

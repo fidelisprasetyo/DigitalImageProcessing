@@ -22,15 +22,7 @@ public class GUI extends JFrame implements ActionListener {
         toolBar = new JToolBar();
         comboBox = new JComboBox(new String[] {
                 "Select an action",
-                "Convert to PGM",
-                "Change spatial resolution",
-                "Change gray level resolution",
-                "Histogram equalization",
-                "Image enhancement spatial filters",
-                "Remove bit-planes",
-                "Image restoration spatial filters",
-                "Kuwahara Filter",
-                "Image Compression"});
+                "Kuwahara Filter"});
 
         // prepare image panels
         JLabel leftImage = new JLabel();
@@ -87,30 +79,15 @@ public class GUI extends JFrame implements ActionListener {
             for(ActionListener listener : listeners) {
                 executeButton.removeActionListener(listener);
             }
-            if(imageHandler.isInputNull()) { //DEBUG MODEDEDEDE
+            if(imageHandler.isInputNull()) { // DEBUG MODE INVERSE THIS
                 executeButton.addActionListener(e1 -> JOptionPane.showMessageDialog(null, "No input file!", "Error", JOptionPane.ERROR_MESSAGE));
             } else {
                 if (selectedOption == 0) {  // nothing
 
                 } else if (selectedOption == 1) {
-                    executeButton.addActionListener(new ConvertToPGMActionListener(imageHandler));  // convert to PGM
-                } else if (selectedOption == 2) {
-                    executeButton.addActionListener(new SpatialResolutionActionListener(imageHandler, frame)); // change spatial resolution
-                } else if (selectedOption == 3) {
-                    executeButton.addActionListener(new GrayResolutionActionListener(imageHandler, frame));    // change gray level resolution
-                } else if (selectedOption == 4) {
-                    executeButton.addActionListener(new HistogramEqualizationActionListener(imageHandler, frame));
-                } else if (selectedOption == 5) {
-                    executeButton.addActionListener(new SpatialFilterActionListener(imageHandler, frame));
-                } else if (selectedOption == 6) {
-                    executeButton.addActionListener(new BitPlanesActionListener(imageHandler, frame));
-                } else if (selectedOption == 7) {
-                    executeButton.addActionListener(new RestorationFilterActionListener(imageHandler, frame));
-                } else if (selectedOption == 8) {
                     executeButton.addActionListener(new KuwaharaFilterActionListener(imageHandler, frame));
-                } else if (selectedOption == 9) {
-                    executeButton.addActionListener(new CompressionActionListener(imageHandler, frame));
                 }
+
             }
         }
     }
